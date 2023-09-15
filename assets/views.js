@@ -1,4 +1,4 @@
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 
 
 const db = mysql.createConnection(
@@ -12,6 +12,9 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the classlist_db database.`)
   );
+
+
+   
 
 
   // Query to show all employee information
@@ -32,14 +35,16 @@ JOIN
 JOIN 
     department d ON r.department_id = d.id
 LEFT JOIN 
-    employee e2 ON e1.manager_id = e2.id;
-  
-  `, function (err, results) {
-    return console.table(results);
-  });
+    employee e2 ON e1.manager_id = e2.id;`)
+    .then((res,error) => {
+        return console.table(res);
 
-  }
+    })
+    .catch((error) => {
+console.log(error)
+    })
 
+    }
 
 
 
