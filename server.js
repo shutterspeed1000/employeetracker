@@ -27,10 +27,12 @@ const askqs = async () => {
   switch (answers.mainq) {
     case "View all employees":
 
-
-    // I need this to wait
-      emplookup();
-      break;
+    const emptable = new Promise((resolve, reject) => {
+       console.table(emplookup())
+      resolve();
+    });
+    
+    break;
     case "View all departments":
       departlookup();
       break;

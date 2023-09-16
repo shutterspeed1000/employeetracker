@@ -1,6 +1,7 @@
-const mysql = require("mysql2/promise");
+const mysql = require(`mysql2/promise`);
 
 
+async function emplookup() {
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -13,13 +14,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the classlist_db database.`)
   );
 
-
-   
-
-
-  // Query to show all employee information
-
-  const emplookup = () => {db.query(`
+  const result = await db.execute(`
   SELECT 
     e1.first_name AS first_name,
     e1.last_name AS last_name,
@@ -36,15 +31,11 @@ JOIN
     department d ON r.department_id = d.id
 LEFT JOIN 
     employee e2 ON e1.manager_id = e2.id;`)
-    .then((res,error) => {
-        return console.table(res);
 
-    })
-    .catch((error) => {
-console.log(error)
-    })
+    return result
 
-    }
+}
+
 
 
 
