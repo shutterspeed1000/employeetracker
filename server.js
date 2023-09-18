@@ -1,8 +1,9 @@
-const db = require("mysql2");
 const quest = require("inquirer");
 const ui = new quest.ui.BottomBar();
-const { rolelookup, emplookup, departlookup } = require("./assets/views");
-console.log("Welcome to the Employee Tracker v1.0.0");
+require("console.table");
+
+// added class file
+const db = require("./db/class");
 
 const mainq = [
   {
@@ -21,23 +22,106 @@ const mainq = [
   },
 ];
 
+const empq = [
+
+  
+];
+
+const roleq = [
+
+  {
+    type: "input",
+    message: "What department will this roll be in(enter number)?",
+    name: "deptID",
+  },
+  {
+    type: "input",
+    message: "Enter new role name:",
+    name: "roleName",
+    validate: (value) => {
+      if (value.length < 1) {
+        return `You must enter a role name.`;
+    }
+    return true
+  },
+},
+  {
+    type: "input",
+    message: "Enter new role salary:",
+    name: "roleSal",
+    validate: (value) => {
+      if (value.length < 1) {
+        return `You must enter an amount.`;
+    }
+    return true
+  },
+}
+];
+
+const deptq = [
+
+
+  {
+    type: "input",
+    message: "Enter new department name:",
+    name: "deptname",
+    validate: (value) => {
+      if (value.length < 1) {
+        return `You must enter a department name.`;
+    }
+    return true
+  }
+}
+
+];
+
+// Function to ask questions for main site
 const askqs = async () => {
   const answers = await quest.prompt(mainq);
 
   switch (answers.mainq) {
     case "View all employees":
-
-    const emptable = new Promise((resolve, reject) => {
-       console.table(emplookup())
-      resolve();
-    });
-    
-    break;
+      let lookup = "db.getAllEmployees()";
+      datalookup(lookup);
+      break;
     case "View all departments":
-      departlookup();
+      datalookup();
+      break;
+    case "View all roles":
+      break;
+    case "Add a department":
+      break;
+    case "Add a role":
+      addRoleq();
+      break;
+    case "Add an employee":
+      break;
+    case "Update an employee role":
       break;
   }
-  askqs();
 };
+
+async function datalookup(dothis) {
+  try {
+    const [data] = await dothis;
+    console.table(data);
+    askqs();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function addRoleq() {
+  try {
+    const [dept] = await db.getAllDepartments()
+    console.table(dept);
+    const answers = await quest.prompt(roleq);
+    const writedb = await db.addRole(answers.deptID,answers.roleName,answers.roleSal);
+    console.log("Role added to system");
+    askqs();
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 askqs();

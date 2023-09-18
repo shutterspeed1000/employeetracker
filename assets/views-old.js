@@ -1,7 +1,6 @@
-const mysql = require(`mysql2/promise`);
+const mysql = require(`mysql2`);
 
 
-async function emplookup() {
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -14,27 +13,43 @@ const db = mysql.createConnection(
     console.log(`Connected to the classlist_db database.`)
   );
 
-  const result = await db.execute(`
-  SELECT 
-    e1.first_name AS first_name,
-    e1.last_name AS last_name,
-    d.name AS department,
-    r.title AS role,
-    r.salary,
-    e2.first_name AS manager_first_name,
-    e2.last_name AS manager_last_name
-FROM 
-    employee e1
-JOIN 
-    role r ON e1.role_id = r.id
-JOIN 
-    department d ON r.department_id = d.id
-LEFT JOIN 
-    employee e2 ON e1.manager_id = e2.id;`)
-
-    return result
-
+  const emplookup = async () => {
+    try{
+     const [rows,fields] = await db.execute(`SELECT 
+     e1.first_name AS first_name,
+     e1.last_name AS last_name,
+     d.name AS department,
+     r.title AS role,
+     r.salary,
+     e2.first_name AS manager_first_name,
+     e2.last_name AS manager_last_name
+   FROM 
+     employee e1
+   JOIN 
+     role r ON e1.role_id = r.id
+   JOIN 
+     department d ON r.department_id = d.id
+   LEFT JOIN 
+     employee e2 ON e1.manager_id = e2.id;`);
+     console.table(rows);
+    } catch (error) {
+        console.error(error)
+    }
 }
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
 
 
 
