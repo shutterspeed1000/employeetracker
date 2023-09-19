@@ -76,12 +76,22 @@ class Queries {
       );
   }
 
-
-
-  updateRole(empid,newrol) {
+  updateRole(empid, newrol) {
     return this.connection
       .promise()
       .query(`update employee set role_id = ${newrol} where id = ${empid};`);
+  }
+
+  getSalary() {
+    return this.connection.promise().query(`SELECT 
+      d.name AS Department,
+      SUM(r.salary) AS Budget_Used
+  FROM 
+      department d
+  JOIN 
+      role r ON d.id = r.department_id
+  GROUP BY 
+      d.name;`);
   }
 }
 

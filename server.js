@@ -18,6 +18,7 @@ const mainq = [
       "Add a role",
       "Add an employee",
       "Update an employee role",
+      "Show current salary budget",
       "Quit",
     ],
     name: "mainq",
@@ -173,6 +174,10 @@ const askqs = async () => {
     case "Update an employee role":
       upEmRoleq();
       break;
+    case "Show current salary budget":
+       console.log("Current salary totals per department:")
+       viewSal()
+    break;
     case "Quit":
       process.exit();
       break;
@@ -269,6 +274,16 @@ async function upEmRoleq() {
     const emprold2 = await quest.prompt(emprol2);
     const writeRole = await db.updateRole(emprold1.emproleid,emprold2.empnewrol);
     console.log("**********Role updated************");
+    askqs();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function viewSal() {
+  try {
+    const [data] = await db.getSalary();
+    console.table(data);
     askqs();
   } catch (error) {
     console.error(error);
