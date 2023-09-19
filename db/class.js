@@ -20,7 +20,7 @@ class Queries {
         e1.first_name AS first_name,
         e1.last_name AS last_name,
         d.name AS department,
-        r.title AS role,
+        r.title AS title,
         r.salary,
         e2.first_name AS manager_first_name,
         e2.last_name AS manager_last_name
@@ -39,11 +39,16 @@ class Queries {
   }
 
   getAllRoles() {
-    return this.connection.promise().query("SELECT * FROM role;");
+    return this.connection.promise()
+      .query(`SELECT role.id,title,salary,department.name as department FROM role
+    left join department
+    on department.id = role.department_id
+    `);
   }
 
   getAllManager() {
-    return this.connection.promise().query(`select employee.id, first_name, last_name, title
+    return this.connection.promise()
+      .query(`select employee.id, first_name, last_name, title
     from employee
     right join role
     on employee.role_id = role.id where role_id = 1`);
@@ -63,14 +68,21 @@ class Queries {
       .query(`insert into department(name) values("${deptName}");`);
   }
 
+  addEmp(first, last, role, manager) {
+    return this.connection
+      .promise()
+      .query(
+        `insert into employee(first_name,last_name,role_id,manager_id) values("${first}","${last}",${role},${manager});`
+      );
+  }
 
-addEmp(first,last,role,manager) {
-  return this.connection
-    .promise()
-    .query(
-      `insert into employee(first_name,last_name,role_id,manager_id) values("${first}","${last}",${role},${manager});`);
-}
 
+
+  updateRole(empid,newrol) {
+    return this.connection
+      .promise()
+      .query(`update employee set role_id = ${newrol} where id = ${empid};`);
+  }
 }
 
 module.exports = new Queries(connection);
