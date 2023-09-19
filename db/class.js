@@ -1,24 +1,22 @@
 const mysql = require(`mysql2`);
 
+const connection = mysql.createConnection({
+  host: "localhost",
+  // MySQL username,
+  user: "root",
+  // MySQL password
+  password: "SqlSqlSql231@!",
+  database: "company",
+});
 
-const connection = mysql.createConnection(
-    {
-      host: 'localhost',
-      // MySQL username,
-      user: 'root',
-      // MySQL password
-      password: 'SqlSqlSql231@!',
-      database: 'company'
-    },
-  );
+class Queries {
+  constructor(connection) {
+    this.connection = connection;
+  }
 
-  class Queries{
-    constructor(connection){
-        this.connection =  connection
-    }
-
-    getAllEmployees(){
-        return this.connection.promise().query(`SELECT 
+  getAllEmployees() {
+    return this.connection.promise().query(`SELECT 
+        e1.id as employee_id,
         e1.first_name AS first_name,
         e1.last_name AS last_name,
         d.name AS department,
@@ -33,22 +31,46 @@ const connection = mysql.createConnection(
       JOIN 
         department d ON r.department_id = d.id
       LEFT JOIN 
-        employee e2 ON e1.manager_id = e2.id;`)
-    }
-
-    getAllDepartments(){
-      return this.connection.promise().query('SELECT * FROM department;')
-    }
-
-    getAllRoles(){
-      return this.connection.promise().query('SELECT * FROM role;')
-    }
-    
-    addRole(deptID,roleName,roleSal){
-      return this.connection.promise().query(`insert into role(department_id,title,salary) values(${deptID},"${roleName}",${roleSal});`)
-    }
-
+        employee e2 ON e1.manager_id = e2.id;`);
   }
 
-  module.exports = new Queries(connection)
+  getAllDepartments() {
+    return this.connection.promise().query("SELECT * FROM department;");
+  }
 
+  getAllRoles() {
+    return this.connection.promise().query("SELECT * FROM role;");
+  }
+
+  getAllManager() {
+    return this.connection.promise().query(`select employee.id, first_name, last_name, title
+    from employee
+    right join role
+    on employee.role_id = role.id where role_id = 1`);
+  }
+
+  addRole(deptID, roleName, roleSal) {
+    return this.connection
+      .promise()
+      .query(
+        `insert into role(department_id,title,salary) values(${deptID},"${roleName}",${roleSal});`
+      );
+  }
+
+  addDept(deptName) {
+    return this.connection
+      .promise()
+      .query(`insert into department(name) values("${deptName}");`);
+  }
+
+
+addEmp(first,last,role,manager) {
+  return this.connection
+    .promise()
+    .query(
+      `insert into employee(first_name,last_name,role_id,manager_id) values("${first}","${last}",${role},${manager});`);
+}
+
+}
+
+module.exports = new Queries(connection);
